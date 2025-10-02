@@ -1,0 +1,85 @@
+import { Question } from '@/types';
+
+export const questions: Question[] = [
+  {
+    id: 'q1',
+    title: '지금 당신의 마음은\n어떤 날씨인가요?',
+    description: '당신의 현재 감정 상태를 가장 잘 표현하는 날씨를 선택해주세요.',
+    type: 'single',
+    step: 1,
+    options: [
+      { id: 'q1-a1', text: '☀️ 맑음 - 평화롭고 좋아요', value: 'sunny', emotion: 'calm' },
+      { id: 'q1-a2', text: '🌤️ 구름 낀 맑음 - 괜찮아요', value: 'partly-cloudy', emotion: 'social' },
+      { id: 'q1-a3', text: '☁️ 흐림 - 무겁고 답답해요', value: 'cloudy', emotion: 'reflective' },
+      { id: 'q1-a4', text: '🌧️ 비 - 슬프고 우울해요', value: 'rainy', emotion: 'reflective' },
+      { id: 'q1-a5', text: '⛈️ 폭풍 - 혼란스러워요', value: 'stormy', emotion: 'active' },
+    ],
+  },
+  {
+    id: 'q2',
+    title: '지금 당신의 마음을\n가장 많이 차지하는 것은?',
+    description: '요즘 가장 많이 생각하게 되는 주제를 선택해주세요.',
+    type: 'single',
+    step: 2,
+    options: [
+      { id: 'q2-a1', text: '관계의 어려움 (가족, 친구, 연인)', value: 'relationship', emotion: 'social' },
+      { id: 'q2-a2', text: '진로와 미래에 대한 고민', value: 'future', emotion: 'reflective' },
+      { id: 'q2-a3', text: '일상의 피로와 무기력', value: 'fatigue', emotion: 'calm' },
+      { id: 'q2-a4', text: '과거의 상처와 트라우마', value: 'trauma', emotion: 'reflective' },
+      { id: 'q2-a5', text: '나 자신에 대한 의문', value: 'identity', emotion: 'reflective' },
+    ],
+  },
+  {
+    id: 'q3',
+    title: '어떻게 치유받고 싶나요?',
+    description: '여러 개 선택 가능합니다.',
+    type: 'multiple',
+    step: 3,
+    options: [
+      { id: 'q3-a1', text: '조용히 혼자 생각하며', value: 'alone', emotion: 'reflective' },
+      { id: 'q3-a2', text: '누군가와 대화하며', value: 'conversation', emotion: 'social' },
+      { id: 'q3-a3', text: '창작 활동을 하며', value: 'creative', emotion: 'active' },
+      { id: 'q3-a4', text: '책을 읽으며', value: 'reading', emotion: 'calm' },
+      { id: 'q3-a5', text: '새로운 것을 배우며', value: 'learning', emotion: 'active' },
+      { id: 'q3-a6', text: '예술을 감상하며', value: 'art', emotion: 'calm' },
+    ],
+  },
+  {
+    id: 'q4',
+    title: '지금 당신에게 가장 필요한 것은?',
+    description: '하나를 선택해주세요.',
+    type: 'single',
+    step: 4,
+    options: [
+      { id: 'q4-a1', text: '🌟 영감과 동기부여', value: 'inspiration', emotion: 'active' },
+      { id: 'q4-a2', text: '🤲 위로와 공감', value: 'comfort', emotion: 'social' },
+      { id: 'q4-a3', text: '🧘 평화와 고요', value: 'peace', emotion: 'calm' },
+      { id: 'q4-a4', text: '💭 통찰과 깨달음', value: 'insight', emotion: 'reflective' },
+      { id: 'q4-a5', text: '⚡ 변화와 행동', value: 'action', emotion: 'active' },
+      { id: 'q4-a6', text: '😊 기쁨과 즐거움', value: 'joy', emotion: 'social' },
+    ],
+  },
+  {
+    id: 'q5',
+    title: '당신이 좋아하는 주제나 관심사는?',
+    description: '여러 개 선택 가능합니다.',
+    type: 'multiple',
+    step: 5,
+    options: [
+      { id: 'q5-a1', text: '📚 문학과 이야기', value: 'literature', emotion: 'calm' },
+      { id: 'q5-a2', text: '🎨 예술과 디자인', value: 'art', emotion: 'calm' },
+      { id: 'q5-a3', text: '🧠 심리와 철학', value: 'philosophy', emotion: 'reflective' },
+      { id: 'q5-a4', text: '🌍 사회와 문화', value: 'society', emotion: 'social' },
+      { id: 'q5-a5', text: '🎭 공연과 음악', value: 'performance', emotion: 'active' },
+      { id: 'q5-a6', text: '✍️ 글쓰기와 창작', value: 'writing', emotion: 'reflective' },
+    ],
+  },
+  {
+    id: 'q6',
+    title: '맑아진 당신은 어떤 모습일까요?',
+    description: '자유롭게 적어주세요.',
+    type: 'text',
+    step: 6,
+  },
+];
+
