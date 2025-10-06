@@ -70,11 +70,10 @@ export default function ShareCard({ result }: ShareCardProps) {
               style={{
                 width: '110px',
                 height: '110px',
-                background: 'rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(20px)',
+                background: 'rgba(255, 255, 255, 0.2)',
                 borderRadius: '50%',
                 padding: '10px',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
+                border: '2px solid rgba(255, 255, 255, 0.4)',
                 boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)',
               }}
             >
@@ -100,17 +99,20 @@ export default function ShareCard({ result }: ShareCardProps) {
             {result.clarityType.name}
           </h2>
 
-          <div
-            className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-3"
-            style={{
-              background: 'rgba(255, 255, 255, 0.25)',
-              backdropFilter: 'blur(10px)',
-              border: '2px solid rgba(255, 255, 255, 0.4)',
-              color: 'white',
-              textShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
-            }}
-          >
-            &ldquo;{result.clarityType.nickname}&rdquo;
+          <div className="flex justify-center mb-3">
+            <div
+              className="px-3 py-1 rounded-full text-xs font-bold"
+              style={{
+                background: 'rgba(255, 255, 255, 0.25)',
+                border: '2px solid rgba(255, 255, 255, 0.4)',
+                color: 'white',
+                textShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
+                whiteSpace: 'nowrap',
+                display: 'inline-block',
+              }}
+            >
+              &ldquo;{result.clarityType.nickname}&rdquo;
+            </div>
           </div>
 
           {/* 간단한 설명 */}
@@ -141,9 +143,8 @@ export default function ShareCard({ result }: ShareCardProps) {
           <div
             className="p-3 rounded-xl"
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              backdropFilter: 'blur(10px)',
-              border: '2px solid rgba(255, 255, 255, 0.3)',
+              background: 'rgba(255, 255, 255, 0.25)',
+              border: '2px solid rgba(255, 255, 255, 0.4)',
             }}
           >
             <div className="flex items-center gap-2 mb-1.5">

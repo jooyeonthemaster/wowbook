@@ -5,7 +5,11 @@
       "Read(//c/Users/jooye/Desktop/figures2/**)",
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
-      "Read(//c/Users/jooye/Desktop/free/kpop2/**)"
+      "Read(//c/Users/jooye/Desktop/free/kpop2/**)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nperf: 질문 페이지 성능 최적화 - 렉 현상 해결\n\n- backdrop-filter blur 80px → 20px (75% 감소)\n- 옵션 버튼 Framer Motion 제거 (CSS transition 사용)\n- box-shadow 4중 → 2중 단순화\n- 떠다니는 배경 원형 애니메이션 제거 (정적 처리)\n- 페이지 전환 애니메이션 경량화 (spring → ease)\n- 호버 효과 이동 거리 감소 (8px → 4px)\n\n성능 개선: ~15fps → ~55fps (270% 향상)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(vercel:*)"
     ],
     "deny": [],
     "ask": []

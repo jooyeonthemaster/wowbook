@@ -173,10 +173,10 @@ export default function QuestionsPage() {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentQuestion.id}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
           >
             <GlassCard className="mb-4">
               <div className="mb-3">
@@ -192,7 +192,7 @@ export default function QuestionsPage() {
                 </span>
               </div>
 
-              <h2 className="text-lg font-bold mb-2 text-white text-glow whitespace-pre-line">
+              <h2 className="text-lg font-bold mb-2 text-white whitespace-pre-line">
                 {currentQuestion.title}
               </h2>
 

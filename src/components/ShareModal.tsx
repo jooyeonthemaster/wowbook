@@ -28,6 +28,9 @@ export default function ShareModal({ isOpen, onClose, result }: ShareModalProps)
     try {
       setIsSharing(true);
 
+      // 폰트와 이미지 로딩 대기 (레이아웃 안정화)
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       // 이미지를 생성
       const canvas = await html2canvas(cardRef.current, {
         scale: 2,
@@ -35,6 +38,11 @@ export default function ShareModal({ isOpen, onClose, result }: ShareModalProps)
         logging: false,
         useCORS: true,
         allowTaint: true,
+        width: 380,
+        height: 580,
+        windowWidth: 380,
+        windowHeight: 580,
+        imageTimeout: 0,
       });
 
       // Canvas를 Blob으로 변환
@@ -94,6 +102,9 @@ export default function ShareModal({ isOpen, onClose, result }: ShareModalProps)
     try {
       setIsDownloading(true);
 
+      // 폰트와 이미지 로딩 대기 (레이아웃 안정화)
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       // html2canvas로 DOM을 이미지로 변환
       const canvas = await html2canvas(cardRef.current, {
         scale: 2, // 고해상도
@@ -101,6 +112,11 @@ export default function ShareModal({ isOpen, onClose, result }: ShareModalProps)
         logging: false,
         useCORS: true,
         allowTaint: true,
+        width: 380,
+        height: 580,
+        windowWidth: 380,
+        windowHeight: 580,
+        imageTimeout: 0,
       });
 
       // Canvas를 Blob으로 변환
