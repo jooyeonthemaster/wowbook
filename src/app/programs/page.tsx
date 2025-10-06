@@ -4,25 +4,16 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import MobileLayout from '@/components/MobileLayout';
 import GlassCard from '@/components/GlassCard';
-import WeatherDiaryModal from '@/components/WeatherDiaryModal';
 import { wowbookPrograms } from '@/lib/programs';
-import { WowbookProgram } from '@/types';
 
 export default function ProgramsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedProgram, setSelectedProgram] = useState<WowbookProgram | null>(null);
-  const [showDiaryModal, setShowDiaryModal] = useState(false);
 
   const categories = ['all', '개막행사', '와우스페셜', '와우판타스틱서재', '와우국제교류', '폐막토크'];
 
   const filteredPrograms = selectedCategory === 'all'
     ? wowbookPrograms
     : wowbookPrograms.filter(p => p.category === selectedCategory);
-
-  const handleWriteDiary = (program: WowbookProgram) => {
-    setSelectedProgram(program);
-    setShowDiaryModal(true);
-  };
 
   return (
     <MobileLayout>
@@ -101,16 +92,18 @@ export default function ProgramsPage() {
                   </div>
                 </div>
 
-                {/* 기상 일지 작성 버튼 */}
-                <button
-                  onClick={() => handleWriteDiary(program)}
+                {/* 프로그램 예약 버튼 */}
+                <a
+                  href={program.reservationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-full mt-3 py-2.5 bg-gradient-to-r from-purple-500/30 to-pink-500/30 hover:from-purple-500/40 hover:to-pink-500/40 rounded-xl text-sm font-semibold text-white transition-all flex items-center justify-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  기상 일지 작성
-                </button>
+                  프로그램 예약
+                </a>
               </GlassCard>
             </motion.div>
           ))}
@@ -122,22 +115,6 @@ export default function ProgramsPage() {
           </div>
         )}
       </div>
-
-      {/* 기상 일지 모달 */}
-      {selectedProgram && (
-        <WeatherDiaryModal
-          program={selectedProgram}
-          isOpen={showDiaryModal}
-          onClose={() => {
-            setShowDiaryModal(false);
-            setSelectedProgram(null);
-          }}
-          onSave={() => {
-            // 저장 성공 시 알림
-            alert('기상 일지가 저장되었습니다!');
-          }}
-        />
-      )}
     </MobileLayout>
   );
 }

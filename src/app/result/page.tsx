@@ -414,7 +414,7 @@ export default function ResultPage() {
                   )}
 
                   {/* 태그 */}
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1.5 mb-3">
                     {program.tags.slice(0, isExpanded ? undefined : 4).map((tag) => (
                       <span
                         key={tag}
@@ -425,6 +425,26 @@ export default function ResultPage() {
                       </span>
                     ))}
                   </div>
+
+                  {/* 프로그램 예약 버튼 */}
+                  <a
+                    href={program.reservationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full mt-3 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                    style={{
+                      background: 'linear-gradient(90deg, rgba(167, 139, 250, 0.3), rgba(244, 114, 182, 0.3))',
+                      border: '2px solid rgba(255, 255, 255, 0.3)',
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span>프로그램 예약</span>
+                    </div>
+                  </a>
                 </motion.div>
               );
             })}

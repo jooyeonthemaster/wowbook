@@ -61,6 +61,7 @@ export interface WowbookProgram {
   location: string;
   description: string;
   tags: string[];
+  reservationUrl: string; // 프로그램 예약 링크
   emotionMatch: {
     calm: number;      // 0-100: 조용하고 평화로운 정도
     active: number;    // 0-100: 활동적이고 역동적인 정도
