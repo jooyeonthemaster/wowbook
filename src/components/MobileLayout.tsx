@@ -24,7 +24,7 @@ export default function MobileLayout({
       {showHeader && <Header />}
 
       {/* 메인 콘텐츠 */}
-      <motion.main
+      <main
         className="relative z-10 min-h-screen"
         style={{
           paddingTop: showHeader ? '48px' : 0,
@@ -33,21 +33,19 @@ export default function MobileLayout({
       >
         <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 30,
-              duration: 0.3,
+              duration: 0.2,
+              ease: 'easeInOut',
             }}
             className="relative z-10"
           >
             {children}
           </motion.div>
         </AnimatePresence>
-      </motion.main>
+      </main>
 
       {/* 하단 네비게이션 */}
       {showBottomNav && <BottomNavigation />}
@@ -59,33 +57,10 @@ export default function MobileLayout({
         <div className="absolute bottom-0 right-0 w-2/3 h-2/3 bg-gradient-to-tl from-pink-500/20 to-transparent opacity-30" />
       </div>
 
-      {/* 데코레이션 요소들 */}
+      {/* 데코레이션 요소들 - 정적 */}
       <div className="fixed inset-0 -z-5 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-20 -right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-        <motion.div
-          className="absolute bottom-40 -left-10 w-32 h-32 bg-pink-500/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 2,
-          }}
-        />
+        <div className="absolute top-20 -right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl opacity-40" />
+        <div className="absolute bottom-40 -left-10 w-32 h-32 bg-pink-500/10 rounded-full blur-3xl opacity-30" />
       </div>
     </div>
   );

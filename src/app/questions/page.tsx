@@ -211,30 +211,26 @@ export default function QuestionsPage() {
                   {currentQuestion.options?.map((option) => {
                     const isSelected = selectedOptions.includes(option.value);
                     return (
-                      <motion.button
+                      <button
                         key={option.id}
                         onClick={() => handleOptionSelect(option.value)}
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={`w-full text-left p-3 rounded-xl transition-all duration-300 ${
-                          isSelected
-                            ? 'border-2'
-                            : 'border-2'
+                        className={`w-full text-left p-3 rounded-xl transition-all duration-200 border-2 ${
+                          isSelected ? 'scale-[0.98]' : 'active:scale-[0.98]'
                         }`}
                         style={{
                           borderColor: isSelected ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.2)',
                           background: isSelected
                             ? 'linear-gradient(135deg, rgba(186, 230, 253, 0.4), rgba(147, 197, 253, 0.4))'
                             : 'rgba(255, 255, 255, 0.15)',
-                          boxShadow: isSelected 
-                            ? '0 8px 32px rgba(147, 197, 253, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5)'
-                            : '0 4px 16px rgba(0, 0, 0, 0.1)',
+                          boxShadow: isSelected
+                            ? '0 4px 20px rgba(147, 197, 253, 0.3)'
+                            : '0 2px 10px rgba(0, 0, 0, 0.1)',
                         }}
                       >
                         <p className="font-medium text-white text-sm">
                           {option.text}
                         </p>
-                      </motion.button>
+                      </button>
                     );
                   })}
                 </div>
