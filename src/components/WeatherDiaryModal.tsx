@@ -1,12 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import GlassCard from './GlassCard';
-import Button from './Button';
-import WeatherIcon from './WeatherIcon';
 import { WeatherMood, WowbookProgram } from '@/types';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface WeatherDiaryModalProps {
   program: WowbookProgram;
@@ -24,20 +20,38 @@ const weatherMoods: { mood: WeatherMood; label: string; emoji: string }[] = [
   { mood: 'snowy', label: '눈', emoji: '❄️' },
 ];
 
+// 브라우저 세션 ID 생성 (한 번만 생성되고 재사용)
+function getOrCreateSessionId(): string {
+  if (typeof window === 'undefined') return '';
+
+  let sessionId = sessionStorage.getItem('userSessionId');
+  if (!sessionId) {
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    sessionStorage.setItem('userSessionId', sessionId);
+  }
+  return sessionId;
+}
+
 export default function WeatherDiaryModal({ program, isOpen, onClose, onSave }: WeatherDiaryModalProps) {
-  const { user } = useAuth();
   const [selectedMood, setSelectedMood] = useState<WeatherMood | null>(null);
   const [content, setContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [sessionId, setSessionId] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setSessionId(getOrCreateSessionId());
+    }
+  }, [isOpen]);
 
   const handleSave = async () => {
-    if (!selectedMood || !content.trim() || !user) return;
+    if (!selectedMood || !content.trim() || !sessionId) return;
 
     setIsSaving(true);
 
     try {
       const requestBody = {
-        userId: user.uid,
+        sessionId,
         programId: program.id,
         programTitle: program.title,
         mood: selectedMood,

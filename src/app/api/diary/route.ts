@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, Timestamp } from 'firebase/firestore';
 import { WeatherDiary } from '@/types';
 
 // POST: 기상 일지 저장
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, programId, programTitle, mood, content } = body;
+    const { sessionId, programId, programTitle, mood, content } = body;
 
     // 유효성 검사
-    if (!userId || !programId || !programTitle || !mood || !content) {
+    if (!sessionId || !programId || !programTitle || !mood || !content) {
       return NextResponse.json(
         { error: '필수 정보가 누락되었습니다' },
         { status: 400 }
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
     // Firestore에 저장
     const diaryData = {
-      userId,
+      sessionId, // userId 대신 sessionId
       programId,
       programTitle,
       mood,
@@ -43,23 +43,23 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET: 기상 일지 조회 (userId 파라미터로)
+// GET: 기상 일지 조회 (sessionId 파라미터로)
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const userId = searchParams.get('userId');
+    const sessionId = searchParams.get('sessionId');
 
-    if (!userId) {
+    if (!sessionId) {
       return NextResponse.json(
-        { error: 'userId가 필요합니다' },
+        { error: 'sessionId가 필요합니다' },
         { status: 400 }
       );
     }
 
-    // Firestore에서 사용자의 기상 일지 조회
+    // Firestore에서 세션의 기상 일지 조회
     const q = query(
       collection(db, 'weatherDiaries'),
-      where('userId', '==', userId)
+      where('sessionId', '==', sessionId)
     );
 
     const querySnapshot = await getDocs(q);
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       const data = doc.data();
       diaries.push({
         id: doc.id,
-        userId: data.userId,
+        userId: data.sessionId, // 타입 호환성을 위해 userId 필드에 sessionId 저장
         programId: data.programId,
         programTitle: data.programTitle,
         mood: data.mood,

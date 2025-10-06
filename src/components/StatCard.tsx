@@ -52,3 +52,4 @@ export default function StatCard({ icon, label, value, color, delay = 0 }: StatC
   );
 }
 
+

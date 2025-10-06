@@ -13,7 +13,7 @@ export async function GET() {
       const data = doc.data();
       allDiaries.push({
         id: doc.id,
-        userId: data.userId,
+        userId: data.sessionId || data.userId, // sessionId 우선, 없으면 userId (하위 호환)
         programId: data.programId,
         programTitle: data.programTitle,
         mood: data.mood,
@@ -22,7 +22,7 @@ export async function GET() {
       });
     });
 
-    // 고유 사용자 수
+    // 고유 세션 수 (userId는 sessionId를 담고 있음)
     const uniqueUsers = new Set(allDiaries.map(d => d.userId)).size;
 
     // 프로그램별 통계 계산

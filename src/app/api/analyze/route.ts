@@ -4,6 +4,7 @@ import { UserAnswer, RecommendationResult } from '@/types';
 import { questions } from '@/lib/questions';
 import { wowbookPrograms } from '@/lib/programs';
 import {
+  calculateClarityType,
   calculateEmotionProfile,
   calculateClarityScore,
   recommendPrograms,
@@ -20,6 +21,9 @@ export async function POST(request: NextRequest) {
     // 1단계: 규칙 기반 추천 (일관성 & 다양성 보장)
     // ============================================
     
+    // 맑음 유형 계산 (16가지)
+    const clarityType = calculateClarityType(answers);
+    
     // 감정 프로필 계산
     const userEmotionProfile = calculateEmotionProfile(answers);
     
@@ -31,6 +35,8 @@ export async function POST(request: NextRequest) {
     const recommendedProgramIds = recommendedPrograms.map((p) => p.id);
 
     console.log('📊 규칙 기반 추천 완료:', {
+      clarityType: clarityType.name,
+      clarityTypeCode: clarityType.code,
       emotionProfile: userEmotionProfile,
       clarity,
       recommendedPrograms: recommendedPrograms.map((p) => p.title),
@@ -180,6 +186,7 @@ ${recommendedProgramsInfo}
     // ============================================
 
     const recommendationResult: RecommendationResult = {
+      clarityType, // 맑음 유형 (16가지)
       recommendedPrograms, // 규칙 기반
       programReasons: aiResponse.programReasons || {}, // AI 생성
       userEmotionProfile, // 규칙 기반

@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
 import MobileLayout from '@/components/MobileLayout';
 import GlassCard from '@/components/GlassCard';
 import Button from '@/components/Button';
@@ -10,28 +9,6 @@ import WeatherIcon from '@/components/WeatherIcon';
 
 export default function Home() {
   const router = useRouter();
-  const { user, loading } = useAuth();
-
-  // 로딩 중
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-6">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-white text-lg font-medium"
-        >
-          로딩 중...
-        </motion.div>
-      </div>
-    );
-  }
-
-  // 로그인하지 않은 경우
-  if (!user) {
-    router.push('/login');
-    return null;
-  }
 
   return (
     <MobileLayout>
@@ -137,10 +114,10 @@ export default function Home() {
               </div>
               <div className="flex-1">
                 <p className="text-sm text-white font-semibold">
-                  AI 맞춤 프로그램 추천
+                  나의 맑음 유형 진단
                 </p>
                 <p className="text-xs text-white/70">
-                  6개 질문 · 3분 소요
+                  8개 질문 · 3분 소요 · 16가지 유형
                 </p>
               </div>
             </div>

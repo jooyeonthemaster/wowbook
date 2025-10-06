@@ -26,11 +26,20 @@ export default function QuestionsPage() {
     if (currentQuestion.type === 'single') {
       setSelectedOptions([optionValue]);
     } else if (currentQuestion.type === 'multiple') {
-      setSelectedOptions((prev) =>
-        prev.includes(optionValue)
-          ? prev.filter((v) => v !== optionValue)
-          : [...prev, optionValue]
-      );
+      setSelectedOptions((prev) => {
+        if (prev.includes(optionValue)) {
+          // 이미 선택됨 -> 제거
+          return prev.filter((v) => v !== optionValue);
+        } else {
+          // 새로 선택
+          const maxSelect = currentQuestion.maxSelect || 10;
+          if (prev.length >= maxSelect) {
+            // 최대 개수 도달 -> 가장 오래된 것 제거하고 추가
+            return [...prev.slice(1), optionValue];
+          }
+          return [...prev, optionValue];
+        }
+      });
     }
   };
 
@@ -189,6 +198,11 @@ export default function QuestionsPage() {
 
               <p className="text-xs mb-3 text-white/70">
                 {currentQuestion.description}
+                {currentQuestion.type === 'multiple' && currentQuestion.maxSelect && (
+                  <span className="ml-2 text-white/50">
+                    (최대 {currentQuestion.maxSelect}개)
+                  </span>
+                )}
               </p>
 
               {/* 선택형 질문 */}

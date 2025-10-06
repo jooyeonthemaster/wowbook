@@ -1,6 +1,7 @@
-import { UserAnswer, WowbookProgram } from '@/types';
+import { UserAnswer, WowbookProgram, ClarityTypeCode, ClarityType } from '@/types';
 import { questions } from './questions';
 import { wowbookPrograms } from './programs';
+import { getClarityType } from './clarityTypes';
 
 // 감정 프로필 타입
 export interface EmotionProfile {
@@ -8,6 +9,76 @@ export interface EmotionProfile {
   active: number;
   reflective: number;
   social: number;
+}
+
+// 옵션 ID로 축 값 매핑
+const optionToAxisMap: Record<string, 'I' | 'O' | 'B' | 'G' | 'S' | 'L' | 'C' | 'W'> = {
+  // Q1, Q2: I/O
+  'q1-a1': 'I', 'q1-a3': 'I', 'q1-a2': 'O', 'q1-a4': 'O',
+  'q2-a1': 'I', 'q2-a3': 'I', 'q2-a2': 'O', 'q2-a4': 'O',
+  // Q3, Q4: B/G
+  'q3-a1': 'B', 'q3-a3': 'B', 'q3-a2': 'G', 'q3-a4': 'G',
+  'q4-a1': 'B', 'q4-a2': 'B', 'q4-a3': 'G', 'q4-a4': 'G', 'q4-a5': 'G',
+  // Q5, Q6: S/L
+  'q5-a1': 'S', 'q5-a3': 'S', 'q5-a2': 'L', 'q5-a4': 'L',
+  'q6-a1': 'S', 'q6-a3': 'S', 'q6-a2': 'L', 'q6-a4': 'L',
+  // Q7, Q8: C/W
+  'q7-a1': 'C', 'q7-a3': 'C', 'q7-a2': 'W', 'q7-a4': 'W',
+  'q8-a1': 'C', 'q8-a2': 'C', 'q8-a3': 'W', 'q8-a4': 'W', 'q8-a5': 'W',
+};
+
+// 맑음 유형 계산 함수
+export function calculateClarityType(answers: UserAnswer[]): ClarityType {
+  const scores = {
+    I: 0,
+    O: 0,
+    B: 0,
+    G: 0,
+    S: 0,
+    L: 0,
+    C: 0,
+    W: 0,
+  };
+
+  // 각 답변에서 점수 집계
+  answers.forEach((answer) => {
+    const question = questions.find((q) => q.id === answer.questionId);
+    if (!question || !question.axis) return;
+
+    const selectedValues = Array.isArray(answer.answer)
+      ? answer.answer
+      : [answer.answer];
+
+    // 선택된 옵션들의 점수 합산
+    selectedValues.forEach((value) => {
+      const option = question.options?.find((opt) => opt.value === value);
+      if (option) {
+        // 축 값 매핑
+        const axisValue = optionToAxisMap[option.id];
+        if (axisValue) {
+          scores[axisValue] += option.score;
+        }
+      }
+    });
+  });
+
+  // 각 축별로 우세한 쪽 결정
+  const axis1 = scores.I >= scores.O ? 'I' : 'O';
+  const axis2 = scores.B >= scores.G ? 'B' : 'G';
+  const axis3 = scores.S >= scores.L ? 'S' : 'L';
+  const axis4 = scores.C >= scores.W ? 'C' : 'W';
+
+  // 유형 코드 생성
+  const typeCode = `${axis1}${axis2}${axis3}${axis4}` as ClarityTypeCode;
+
+  console.log('🌤️ 맑음 유형 계산:', {
+    scores,
+    axes: { axis1, axis2, axis3, axis4 },
+    typeCode,
+    typeName: getClarityType(typeCode).name,
+  });
+
+  return getClarityType(typeCode);
 }
 
 // 감정 점수 계산 함수

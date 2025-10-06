@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm run dev:*)",
       "Read(//c/Users/jooye/Desktop/figures2/**)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Read(//c/Users/jooye/Desktop/free/kpop2/**)"
     ],
     "deny": [],
     "ask": []

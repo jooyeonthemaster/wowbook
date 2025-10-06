@@ -180,18 +180,15 @@ export default function MyPage() {
                       <GlassCard className="p-4 hover:bg-white/10 transition-all">
                         <div className="flex items-center gap-4">
                           <div className="text-4xl">
-                            {item.result.clarity >= 80 ? '☀️' : 
-                             item.result.clarity >= 60 ? '⛅' :
-                             item.result.clarity >= 40 ? '☁️' :
-                             item.result.clarity >= 20 ? '🌧️' : '⛈️'}
+                            {item.result.clarityType?.emoji || '☀️'}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="text-2xl font-bold text-white">
-                                맑음 {item.result.clarity}%
+                              <span className="text-lg font-bold text-white">
+                                {item.result.clarityType?.name || '맑음 유형'}
                               </span>
                             </div>
-                            <p className="text-sm text-white/60">
+                            <p className="text-xs text-white/60">
                               {new Date(item.createdAt).toLocaleDateString('ko-KR', {
                                 year: 'numeric',
                                 month: 'long',

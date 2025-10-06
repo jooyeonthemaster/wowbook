@@ -6,13 +6,43 @@ export interface Question {
   type: 'single' | 'multiple' | 'text';
   options?: QuestionOption[];
   step: number;
+  axis?: 'I/O' | 'B/G' | 'S/L' | 'C/W'; // 측정 축
+  maxSelect?: number; // 다중 선택 최대 개수
 }
 
 export interface QuestionOption {
   id: string;
   text: string;
   value: string;
-  emotion?: 'calm' | 'active' | 'reflective' | 'social';
+  score: number; // 점수 (1 or 2)
+  vibe?: string; // 분위기 설명
+  emotion?: 'calm' | 'active' | 'reflective' | 'social'; // 기존 호환성
+}
+
+// 맑음 유형 타입
+export type ClarityTypeCode = 
+  | 'IBSC' | 'IBSW' | 'IBLC' | 'IBLW'
+  | 'IGSC' | 'IGSW' | 'IGLC' | 'IGLW'
+  | 'OBSC' | 'OBSW' | 'OBLC' | 'OBLW'
+  | 'OGSC' | 'OGSW' | 'OGLC' | 'OGLW';
+
+export interface ClarityType {
+  code: ClarityTypeCode;
+  name: string; // "새벽 서리 맑음"
+  nameEn: string; // "Dawn Frost Clarity"
+  nickname: string; // "차가운 명료함"
+  emoji: string; // "❄️🌅"
+  description: string; // 유형 설명 (짧게)
+  characteristics: string[]; // 핵심 특성 4-5개
+  clarityMoment: string; // 맑아지는 순간 (서정적으로)
+  festivalStyle: {
+    programs: string[];
+    place: string;
+    time: string;
+    participation: string;
+  };
+  signature: string; // 대표 문장
+  tags: string[]; // 키워드
 }
 
 // 사용자 응답 타입
@@ -49,6 +79,7 @@ export interface JourneyStep {
 
 // AI 추천 결과 타입
 export interface RecommendationResult {
+  clarityType: ClarityType; // 맑음 유형 (16가지)
   recommendedPrograms: WowbookProgram[];
   programReasons: { [programId: string]: string }; // 각 프로그램 추천 이유 (주접 가득)
   userEmotionProfile: {
@@ -120,5 +151,51 @@ export interface AnalysisResult {
   result: RecommendationResult;
   answers: UserAnswer[];
   createdAt: Date;
+}
+
+// 16개 날씨 유형 프로필 타입 (MBTI 스타일)
+export type WeatherProfileType =
+  // 그룹 1: 혼자 × 고요 (IB) - 조용한 내면의 맑음
+  | 'IBSC'  // 새벽 서리 맑음
+  | 'IBSW'  // 봄날 아침 맑음
+  | 'IBLC'  // 가을밤 보름달 맑음
+  | 'IBLW'  // 안개 낀 아침 맑음
+  // 그룹 2: 혼자 × 역동 (IG) - 강렬한 내면의 맑음
+  | 'IGSC'  // 겨울 눈보라 맑음
+  | 'IGSW'  // 여름 소나기 맑음
+  | 'IGLC'  // 별이 쏟아지는 밤 맑음
+  | 'IGLW'  // 봄바람 꽃잎 맑음
+  // 그룹 3: 함께 × 고요 (OB) - 조용한 연결의 맑음
+  | 'OBSC'  // 이슬 내린 새벽 맑음
+  | 'OBSW'  // 봄비 내리는 오후 맑음
+  | 'OBLC'  // 보름달 뜨는 밤 맑음
+  | 'OBLW'  // 봄날 아지랑이 맑음
+  // 그룹 4: 함께 × 역동 (OG) - 강렬한 연결의 맑음
+  | 'OGSC'  // 뇌우 치는 오후 맑음
+  | 'OGSW'  // 소나기 쏟아진 후 맑음
+  | 'OGLC'  // 구름 흐르는 저녁 맑음
+  | 'OGLW'; // 무지개 뜬 하늘 맑음
+
+export interface WeatherProfile {
+  type: WeatherProfileType;
+  name: string;
+  description: string;
+  characteristics: string[];
+  emoji: string;
+  color: string;
+}
+
+// 이미지 생성 요청 타입
+export interface ProfileImageGenerationRequest {
+  referenceImage: string; // Base64
+  profileType: WeatherProfileType;
+}
+
+// 이미지 생성 응답 타입
+export interface ProfileImageGenerationResponse {
+  success: boolean;
+  profileType: WeatherProfileType;
+  generatedImage?: string; // Base64
+  error?: string;
 }
 
