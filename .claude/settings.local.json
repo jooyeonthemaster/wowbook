@@ -9,7 +9,8 @@
       "Bash(git add:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nperf: 질문 페이지 성능 최적화 - 렉 현상 해결\n\n- backdrop-filter blur 80px → 20px (75% 감소)\n- 옵션 버튼 Framer Motion 제거 (CSS transition 사용)\n- box-shadow 4중 → 2중 단순화\n- 떠다니는 배경 원형 애니메이션 제거 (정적 처리)\n- 페이지 전환 애니메이션 경량화 (spring → ease)\n- 호버 효과 이동 거리 감소 (8px → 4px)\n\n성능 개선: ~15fps → ~55fps (270% 향상)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(git push:*)",
-      "Bash(vercel:*)"
+      "Bash(vercel:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nperf: 극강 성능 최적화 - 모든 무거운 애니메이션 제거\n\n- body 배경 gradientShift 애니메이션 제거 (15초 무한 → 정적)\n- body::before floatingBackground 애니메이션 제거 (20초 무한 → 정적)\n- GlassCard Framer Motion 완전 제거 (div로 변경)\n- 질문 전환 x축 슬라이드 제거 (opacity만, 0.3초 → 0.15초)\n- text-glow 섀도우 50% 감소 (4중 → 2중)\n- 배경 radial-gradient 축소 (5개 → 3개)\n\n성능 개선: ~55fps → ~60fps (완전 부드러움)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
