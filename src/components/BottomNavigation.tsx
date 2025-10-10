@@ -70,9 +70,10 @@ export default function BottomNavigation() {
     <motion.div
       className="fixed bottom-0 inset-x-0 z-50"
       style={{
-        height: '56px',
+        paddingBottom: 'env(safe-area-inset-bottom)', // iOS Safe Area 대응
         background: 'rgba(255, 255, 255, 0.08)',
         backdropFilter: 'blur(30px)',
+        WebkitBackdropFilter: 'blur(30px)', // iOS Safari 호환
         borderTop: '1px solid rgba(255, 255, 255, 0.15)',
         boxShadow: '0 -4px 16px rgba(0, 0, 0, 0.1)',
       }}
@@ -80,7 +81,7 @@ export default function BottomNavigation() {
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.2 }}
     >
-      <div className="max-w-md mx-auto h-full flex items-center justify-around px-2">
+      <div className="max-w-md mx-auto flex items-center justify-around px-2" style={{ height: '56px' }}>
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           const isPressed = pressedTab === item.id;
@@ -104,12 +105,14 @@ export default function BottomNavigation() {
               {isActive && (
                 <motion.div
                   className="absolute inset-0 rounded-xl"
-                  layoutId="activeTab"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
                   style={{
                     background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4))',
                     boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
                   }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  transition={{ duration: 0.2 }}
                 />
               )}
 

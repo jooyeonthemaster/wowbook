@@ -60,20 +60,40 @@ export default function QuestionsPage() {
       // 마지막 질문이면 AI 분석 요청
       setIsLoading(true);
       try {
-        const response = await fetch('/api/analyze', {
+        // 1. AI 분석 요청
+        const analyzeResponse = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ answers: newAnswers }),
         });
 
-        if (!response.ok) throw new Error('분석 실패');
+        if (!analyzeResponse.ok) throw new Error('분석 실패');
 
-        const result = await response.json();
+        const result = await analyzeResponse.json();
         
-        // 결과와 답변을 sessionStorage에 저장
+        // 2. Firebase에 결과 저장 (익명 사용자도 저장)
+        const saveResponse = await fetch('/api/results', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: 'anonymous_' + Date.now(), // 익명 사용자 ID
+            result,
+            answers: newAnswers,
+          }),
+        });
+
+        if (!saveResponse.ok) throw new Error('결과 저장 실패');
+
+        const saveData = await saveResponse.json();
+        const resultId = saveData.id;
+
+        // 3. 결과 ID와 함께 sessionStorage에 저장
         sessionStorage.setItem('recommendationResult', JSON.stringify(result));
         sessionStorage.setItem('userAnswers', JSON.stringify(newAnswers));
-        router.push('/result');
+        sessionStorage.setItem('resultId', resultId);
+        
+        // 4. 고유 ID를 포함한 URL로 리다이렉트
+        router.push(`/result/${resultId}`);
       } catch (error) {
         console.error('분석 오류:', error);
         alert('분석 중 오류가 발생했습니다. 다시 시도해주세요.');

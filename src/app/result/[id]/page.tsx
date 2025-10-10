@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import MobileLayout from '@/components/MobileLayout';
 import GlassCard from '@/components/GlassCard';
@@ -14,22 +14,22 @@ import { getClarityType } from '@/lib/clarityTypes';
 // 궁합 좋은 유형 (2개)
 function getCompatibleTypes(code: ClarityTypeCode): ClarityType[] {
   const compatibilityMap: Record<ClarityTypeCode, ClarityTypeCode[]> = {
-    IBSC: ['IBLC', 'OBSC'], // 같은 고요 + 논리
-    IBSW: ['IBLW', 'OBSW'], // 같은 고요 + 감성
-    IBLC: ['IBSC', 'OBLC'], // 같은 고요 + 논리
-    IBLW: ['IBSW', 'OBLW'], // 같은 고요 + 감성
-    IGSC: ['IGLC', 'OGSC'], // 같은 역동 + 논리
-    IGSW: ['IGLW', 'OGSW'], // 같은 역동 + 감성
-    IGLC: ['IGSC', 'OGLC'], // 같은 역동 + 논리
-    IGLW: ['IGSW', 'OGLW'], // 같은 역동 + 감성
-    OBSC: ['IBSC', 'OBLC'], // 같은 고요 + 논리
-    OBSW: ['IBSW', 'OBLW'], // 같은 고요 + 감성
-    OBLC: ['IBLC', 'OBSC'], // 같은 고요 + 논리
-    OBLW: ['IBLW', 'OBSW'], // 같은 고요 + 감성
-    OGSC: ['IGSC', 'OGLC'], // 같은 역동 + 논리
-    OGSW: ['IGSW', 'OGLW'], // 같은 역동 + 감성
-    OGLC: ['IGLC', 'OGSC'], // 같은 역동 + 논리
-    OGLW: ['IGLW', 'OGSW'], // 같은 역동 + 감성
+    IBSC: ['IBLC', 'OBSC'],
+    IBSW: ['IBLW', 'OBSW'],
+    IBLC: ['IBSC', 'OBLC'],
+    IBLW: ['IBSW', 'OBLW'],
+    IGSC: ['IGLC', 'OGSC'],
+    IGSW: ['IGLW', 'OGSW'],
+    IGLC: ['IGSC', 'OGLC'],
+    IGLW: ['IGSW', 'OGLW'],
+    OBSC: ['IBSC', 'OBLC'],
+    OBSW: ['IBSW', 'OBLW'],
+    OBLC: ['IBLC', 'OBSC'],
+    OBLW: ['IBLW', 'OBSW'],
+    OGSC: ['IGSC', 'OGLC'],
+    OGSW: ['IGSW', 'OGLW'],
+    OGLC: ['IGLC', 'OGSC'],
+    OGLW: ['IGLW', 'OGSW'],
   };
   
   return (compatibilityMap[code] || []).map(c => getClarityType(c));
@@ -38,28 +38,28 @@ function getCompatibleTypes(code: ClarityTypeCode): ClarityType[] {
 // 충돌 유형 (2개)
 function getConflictTypes(code: ClarityTypeCode): ClarityType[] {
   const conflictMap: Record<ClarityTypeCode, ClarityTypeCode[]> = {
-    IBSC: ['OGLW', 'OGSW'], // 정반대 (혼자고요논리 vs 함께역동감성)
-    IBSW: ['OGLC', 'OGSC'], // 정반대
-    IBLC: ['OGSW', 'OGLW'], // 정반대
-    IBLW: ['OGSC', 'OGLC'], // 정반대
-    IGSC: ['OBLW', 'OBSW'], // 정반대
-    IGSW: ['OBLC', 'OBSC'], // 정반대
-    IGLC: ['OBSW', 'OBLW'], // 정반대
-    IGLW: ['OBSC', 'OBLC'], // 정반대
-    OBSC: ['IGLW', 'IGSW'], // 정반대
-    OBSW: ['IGLC', 'IGSC'], // 정반대
-    OBLC: ['IGSW', 'IGLW'], // 정반대
-    OBLW: ['IGSC', 'IGLC'], // 정반대
-    OGSC: ['IBLW', 'IBSW'], // 정반대
-    OGSW: ['IBLC', 'IBSC'], // 정반대
-    OGLC: ['IBSW', 'IBLW'], // 정반대
-    OGLW: ['IBSC', 'IBLC'], // 정반대
+    IBSC: ['OGLW', 'OGSW'],
+    IBSW: ['OGLC', 'OGSC'],
+    IBLC: ['OGSW', 'OGLW'],
+    IBLW: ['OGSC', 'OGLC'],
+    IGSC: ['OBLW', 'OBSW'],
+    IGSW: ['OBLC', 'OBSC'],
+    IGLC: ['OBSW', 'OBLW'],
+    IGLW: ['OBSC', 'OBLC'],
+    OBSC: ['IGLW', 'IGSW'],
+    OBSW: ['IGLC', 'IGSC'],
+    OBLC: ['IGSW', 'IGLW'],
+    OBLW: ['IGSC', 'IGLC'],
+    OGSC: ['IBLW', 'IBSW'],
+    OGSW: ['IBLC', 'IBSC'],
+    OGLC: ['IBSW', 'IBLW'],
+    OGLW: ['IBSC', 'IBLC'],
   };
   
   return (conflictMap[code] || []).map(c => getClarityType(c));
 }
 
-// 궁합 이유 (소름돋게 구체적으로)
+// 궁합 이유
 function getCompatibilityReason(myCode: ClarityTypeCode, theirCode: ClarityTypeCode): string {
   const reasons: Record<string, string> = {
     'IBSC-IBLC': '둘이 같이 있는데도 각자 책 읽는 거 가능. "뭐해?" 안 물어봐도 되고, 몇 시간 침묵해도 안 어색. 가끔 "이 부분 봐봐" 하면서 보여주면 딱 이해해줌. 말 안 해도 알아요.',
@@ -83,47 +83,16 @@ function getCompatibilityReason(myCode: ClarityTypeCode, theirCode: ClarityTypeC
   return reasons[`${myCode}-${theirCode}`] || '둘 다 맑아지는 방식이 비슷해서, 서로 이해가 잘 돼요. 함께 있으면 편안해요.';
 }
 
-// 충돌 이유 (소름돋게 구체적으로)
+// 충돌 이유
 function getConflictReason(myCode: ClarityTypeCode, theirCode: ClarityTypeCode): string {
   const reasons: Record<string, string> = {
     'IBSC-OGLW': '당신: "혼자 있고 싶어..." / 이 유형: "야!! 놀러 가자!! 왜 집에만 있어??" → 서로 이해 불가. 당신한텐 지옥, 저한텐 당신이 답답.',
     'IBSC-OGSW': '당신: "조용히 생각 좀..." / 이 유형: "야 진짜 좋았어!! 너도 그랬지?!!" (텐션 MAX) → 당신 귀 아픔. 저 사람은 왜 조용한지 이해 못 함.',
-    'IBSW-OGLC': '당신: "천천히 느껴보자..." / 이 유형: "오케이 5분 쉬었으니 다음 일정!" → 속도 차이로 스트레스. 당신은 느끼고 싶은데 저 사람은 추진.',
-    'IBSW-OGSC': '당신: "그냥 공감해줘..." / 이 유형: "근데 그게 논리적으로 말이 안 되지 않아?" → 공감 원하는데 논리로 반박당함. 속상.',
-    'IBLC-OGSW': '당신: "이거랑 저거랑 연결되는 게..." / 이 유형: "어려운 말 그만! 그냥 즐기자!!" → 당신은 분석하고 싶은데 저 사람은 느끼고만 싶음.',
-    'IBLC-OGLW': '당신: "계획 좀 세워보자" / 이 유형: "계획? 그냥 가면 되지 뭐~" → 당신은 정리하고 싶은데 저 사람은 즉흥. 불안함.',
-    'IBLW-OGSC': '당신: "분위기가 좋았어..." / 이 유형: "근데 내용은 뭐였는데? 근거는?" → 감각으로 기억하는데 논리 요구받음. 부담.',
-    'IBLW-OGLC': '당신: "오늘은 기분 내키는 대로..." / 이 유형: "일정표 짰어! 이렇게 가자!" → 자유롭고 싶은데 스케줄 박힘. 답답.',
-    'IGSC-OBLW': '당신: "완성까지 못 쉬어..." / 이 유형: "야 그만하고 놀자~ 사람들 만나" → 몰입 깨짐. 짜증 유발.',
-    'IGSC-OBSW': '당신: "논리적으로 이렇게..." / 이 유형: "그래, 힘들었지? 괜찮아~" (감정 위로) → 위로 안 원하는데 감정 터치. 불편.',
-    'IGSW-OBLC': '당신: "기분 따라 만드는 중..." / 이 유형: "계획대로 가자, 효율적으로" → 감정 표현하고 싶은데 효율 얘기. 식음.',
-    'IGSW-OBSC': '당신: "그냥 느낌 아니야?" / 이 유형: "근거가 뭔데? 논리적으로 설명해봐" → 감성 무시당하는 느낌.',
-    'IGLC-OBSW': '당신: "이것도 배워볼까? 저것도?" / 이 유형: "너 너무 정신없어... 하나만 해" → 탐험하고 싶은데 브레이크 거는 느낌.',
-    'IGLC-OBLW': '당신: "새로운 거 배웠어!" / 이 유형: "그래~ 근데 기분 어때?" → 지식 얘기하고 싶은데 감정 물어봄. 맥 빠짐.',
-    'IGLW-OBSC': '당신: "그냥 끌려서 왔어" / 이 유형: "왜? 이유가 뭐야?" → 즉흥적으로 움직이는데 이유 캐물음. 귀찮.',
-    'IGLW-OBLC': '당신: "계획? 그딴 거 없어" / 이 유형: "일정 짜야지, 효율적으로" → 자유 vs 체계. 속 터짐.',
-    'OBSC-IGLW': '당신: "진지하게 얘기해보자" / 이 유형: "야 나 저기 가봐야 돼~" → 깊은 대화하고 싶은데 자꾸 딴 데 가려고 함.',
-    'OBSC-IGSW': '당신: "논리적으로 보면..." / 이 유형: "아 몰라!! 그냥 짜증나!!" → 감정 폭발에 당황.',
-    'OBSW-IGLC': '당신: "어떻게 지냈어?" / 이 유형: "아 그거 배웠는데 들어볼래?" (지식 폭탄) → 마음 얘기하고 싶은데 강의 듣는 기분.',
-    'OBSW-IGSC': '당신: "오늘 편하게 수다 떨자~" / 이 유형: "미안, 오늘 작업 있어서..." (약속 펑크) → 자주 못 만남.',
-    'OBLC-IGSW': '당신: "체계적으로 정리해보면..." / 이 유형: "아 그냥 느낌대로 하면 안 돼?" → 정리하고 싶은데 즉흥.',
-    'OBLC-IGLW': '당신: "다 같이 배워보자" / 이 유형: "나 혼자 할래~" → 함께하고 싶은데 자꾸 혼자.',
-    'OBLW-IGSC': '당신: "다 같이 즐기자~" / 이 유형: "미안, 집중해야 돼" → 놀고 싶은데 안 나옴.',
-    'OBLW-IGLC': '당신: "편하게 수다 떨자" / 이 유형: "그거 알아? 어제 배운 건데..." (TMI 폭격) → 편하게 놀고 싶은데 강의.',
-    'OGSC-IBLW': '당신: "이게 맞지 않아?!" / 이 유형: "그냥... 분위기가..." → 논리 vs 감각. 대화 안 통함.',
-    'OGSC-IBSW': '당신: "토론 ㄱㄱ" / 이 유형: "...나 조용히 있고 싶어" → 에너지 넘치는데 상대는 조용. 심심.',
-    'OGSW-IBLC': '당신: "우리 지금 하나야!!" / 이 유형: "...근데 논리적으로 보면" → 감정 고조됐는데 냉수.',
-    'OGSW-IBSC': '당신: "야 진짜 좋지 않아?!" / 이 유형: "...응" (무덤덤) → 텐션 차이 극심. 혼자 신남.',
-    'OGLC-IBSW': '당신: "오케이 이렇게 추진!" / 이 유형: "...나 천천히 할래" → 빠른데 상대는 느림. 답답.',
-    'OGLC-IBLW': '당신: "목표 달성 ㄱㄱ" / 이 유형: "목표? 그냥 즐기면 되지" → 효율 vs 여유. 못 맞춤.',
-    'OGLW-IBSC': '당신: "놀자!! 왜 집에만 있어?!" / 이 유형: "...혼자 있는 게 좋아서" → 이해 불가. 당신은 답답, 저한텐 부담.',
-    'OGLW-IBLC': '당신: "생각하지 말고 느껴!" / 이 유형: "...근데 이게 왜 이렇지?" → 즐기고 싶은데 분석함. 재미없음.',
   };
   
   const key = `${myCode}-${theirCode}`;
   if (reasons[key]) return reasons[key];
   
-  // 기본 메시지
   const my = myCode.split('');
   const their = theirCode.split('');
   const diffs = my.filter((c, i) => c !== their[i]).length;
@@ -134,35 +103,86 @@ function getConflictReason(myCode: ClarityTypeCode, theirCode: ClarityTypeCode):
   return '맑아지는 방식이 좀 달라서, 가끔 "아 답답해" 할 수 있어요. 서로 노력 필요.';
 }
 
-export default function ResultPage() {
+export default function SharedResultPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const params = useParams();
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [expandedProgram, setExpandedProgram] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedResult = sessionStorage.getItem('recommendationResult');
-    if (storedResult) {
-      setResult(JSON.parse(storedResult));
-    } else {
-      router.push('/');
-    }
-  }, [router]);
+    const loadResult = async () => {
+      try {
+        const id = params.id as string;
+        
+        // 먼저 sessionStorage 확인
+        const stored = sessionStorage.getItem('recommendationResult');
+        const storedId = sessionStorage.getItem('resultId');
+        
+        if (stored && storedId === id) {
+          setResult(JSON.parse(stored));
+          setIsLoading(false);
+          return;
+        }
+
+        // sessionStorage에 없으면 API로 불러오기
+        const response = await fetch(`/api/results/${id}`);
+        
+        if (!response.ok) {
+          throw new Error('결과를 찾을 수 없습니다');
+        }
+
+        const data = await response.json();
+        
+        if (data.success && data.result) {
+          setResult(data.result.result);
+        } else {
+          throw new Error('결과를 불러올 수 없습니다');
+        }
+      } catch (err) {
+        console.error('결과 로드 오류:', err);
+        setError(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadResult();
+  }, [params.id]);
 
   const toggleProgram = (programId: string) => {
     setExpandedProgram(expandedProgram === programId ? null : programId);
   };
 
-  if (!result) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6">
-        <p className="text-white/80 text-lg">로딩 중...</p>
-      </div>
+      <MobileLayout>
+        <div className="min-h-screen flex items-center justify-center px-6">
+          <GlassCard className="text-center">
+            <p className="text-white/80 text-lg">결과를 불러오는 중...</p>
+          </GlassCard>
+        </div>
+      </MobileLayout>
     );
   }
 
+  if (error || !result) {
+    return (
+      <MobileLayout>
+        <div className="min-h-screen flex items-center justify-center px-6">
+          <GlassCard className="text-center">
+            <p className="text-white/90 text-xl font-bold mb-4">😢</p>
+            <p className="text-white/80 mb-4">{error || '결과를 찾을 수 없습니다'}</p>
+            <Button variant="primary" onClick={() => router.push('/')}>
+              처음으로 가기
+            </Button>
+          </GlassCard>
+        </div>
+      </MobileLayout>
+    );
+  }
 
   return (
     <MobileLayout>
@@ -294,7 +314,7 @@ export default function ResultPage() {
                   className="glass rounded-2xl p-4 glass-hover cursor-pointer"
                   onClick={() => toggleProgram(program.id)}
                 >
-                  {/* 헤더 */}
+                  {/* 프로그램 상세 내용 - 기존과 동일 */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
@@ -358,7 +378,7 @@ export default function ResultPage() {
                     📍 {program.location}
                   </div>
 
-                  {/* 설명 - 토글 가능 */}
+                  {/* 설명 */}
                   <motion.div
                     initial={false}
                     animate={{
@@ -372,7 +392,6 @@ export default function ResultPage() {
                     </p>
                   </motion.div>
 
-                  {/* 더보기 표시 */}
                   {!isExpanded && program.description.length > 100 && (
                     <div className="text-center mb-3">
                       <span className="text-xs text-white/50 font-medium">
@@ -381,7 +400,7 @@ export default function ResultPage() {
                     </div>
                   )}
 
-                  {/* 🔥 추천 이유 (주접 가득한 멘트) */}
+                  {/* 추천 이유 */}
                   {result.programReasons?.[program.id] && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
@@ -394,7 +413,6 @@ export default function ResultPage() {
                         boxShadow: '0 4px 20px rgba(147, 197, 253, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
                       }}
                     >
-                      {/* 배경 장식 */}
                       <div className="absolute top-0 right-0 text-6xl opacity-10">
                         {index === 0 ? '🎯' : index === 1 ? '✨' : '💫'}
                       </div>
@@ -426,7 +444,7 @@ export default function ResultPage() {
                     ))}
                   </div>
 
-                  {/* 프로그램 예약 버튼 */}
+                  {/* 예약 버튼 */}
                   <a
                     href={program.reservationUrl}
                     target="_blank"
@@ -566,57 +584,9 @@ export default function ResultPage() {
           <Button
             variant="secondary"
             fullWidth
-            onClick={() => {
-              sessionStorage.removeItem('recommendationResult');
-              sessionStorage.removeItem('userAnswers');
-              router.push('/');
-            }}
+            onClick={() => router.push('/')}
           >
-            처음으로 돌아가기
-          </Button>
-          <Button
-            variant="outline"
-            fullWidth
-            disabled={isSaving}
-            onClick={async () => {
-              if (!user) {
-                alert('로그인이 필요한 기능입니다.');
-                router.push('/login');
-                return;
-              }
-
-              try {
-                setIsSaving(true);
-                
-                // 사용자의 답변도 함께 저장
-                const storedAnswers = sessionStorage.getItem('userAnswers');
-                
-                const response = await fetch('/api/results', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    userId: user.uid,
-                    result,
-                    answers: storedAnswers ? JSON.parse(storedAnswers) : [],
-                  }),
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                  alert(`✨ ${result.clarityType.name} 결과가 저장되었습니다!`);
-                } else {
-                  throw new Error(data.error);
-                }
-              } catch (error) {
-                console.error('저장 실패:', error);
-                alert('저장 중 오류가 발생했습니다. 다시 시도해주세요.');
-              } finally {
-                setIsSaving(false);
-              }
-            }}
-          >
-            {isSaving ? '저장 중...' : '🌤️ 내 맑음 유형 저장하기'}
+            나도 진단하러 가기
           </Button>
         </div>
 

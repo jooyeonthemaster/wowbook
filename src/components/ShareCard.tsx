@@ -33,41 +33,41 @@ export default function ShareCard({ result }: ShareCardProps) {
 
   return (
     <div
-      className="relative"
       style={{
+        position: 'relative',
         width: '380px',
         height: '580px',
         background: 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 25%, #3b82f6 50%, #2563eb 75%, #1d4ed8 100%)',
         borderRadius: '24px',
-        padding: '24px 20px',
+        padding: '20px 18px',
         boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
         overflow: 'hidden',
       }}
     >
       {/* 배경 장식 */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 -left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', top: '40px', right: '-40px', width: '160px', height: '160px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '50%', filter: 'blur(80px)' }} />
+        <div style={{ position: 'absolute', bottom: '80px', left: '-40px', width: '128px', height: '128px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '50%', filter: 'blur(80px)' }} />
       </div>
 
       {/* 콘텐츠 */}
-      <div className="relative z-10 flex flex-col h-full">
+      <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', height: '100%' }}>
         {/* 헤더 */}
-        <div className="text-center mb-4">
-          <div className="text-xs font-bold text-white/90 mb-0.5">
+        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+          <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '2px' }}>
             🌈 나의 맑음 진단 결과
           </div>
-          <div className="text-[10px] text-white/70">
+          <div style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.7)' }}>
             21회 서울와우북페스티벌
           </div>
         </div>
 
         {/* 유형 이미지 + 정보 */}
-        <div className="text-center mb-4">
-          <div className="flex justify-center mb-3">
+        <div style={{ textAlign: 'center', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
             <div
-              className="relative"
               style={{
+                position: 'relative',
                 width: '110px',
                 height: '110px',
                 background: 'rgba(255, 255, 255, 0.2)',
@@ -80,8 +80,10 @@ export default function ShareCard({ result }: ShareCardProps) {
               <img
                 src={`/image/weather-profile-${result.clarityType.code}${result.clarityType.code === 'IBSW' ? ' (1)' : ''}.png`}
                 alt={result.clarityType.name}
-                className="w-full h-full object-cover"
                 style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
                   filter: 'drop-shadow(0 4px 12px rgba(255, 255, 255, 0.3))',
                   borderRadius: '50%',
                 }}
@@ -90,8 +92,10 @@ export default function ShareCard({ result }: ShareCardProps) {
           </div>
 
           <h2
-            className="text-2xl font-bold mb-1.5"
             style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              marginBottom: '6px',
               color: 'white',
               textShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
             }}
@@ -99,16 +103,19 @@ export default function ShareCard({ result }: ShareCardProps) {
             {result.clarityType.name}
           </h2>
 
-          <div className="flex justify-center mb-3">
+          <div style={{ textAlign: 'center', marginBottom: '12px' }}>
             <div
-              className="px-3 py-1 rounded-full text-xs font-bold"
               style={{
+                display: 'inline-block',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                fontSize: '12px',
+                fontWeight: 'bold',
                 background: 'rgba(255, 255, 255, 0.25)',
                 border: '2px solid rgba(255, 255, 255, 0.4)',
                 color: 'white',
                 textShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
                 whiteSpace: 'nowrap',
-                display: 'inline-block',
               }}
             >
               &ldquo;{result.clarityType.nickname}&rdquo;
@@ -117,8 +124,12 @@ export default function ShareCard({ result }: ShareCardProps) {
 
           {/* 간단한 설명 */}
           <p
-            className="text-xs text-white/90 leading-relaxed px-2"
             style={{
+              fontSize: '12px',
+              color: 'rgba(255, 255, 255, 0.9)',
+              lineHeight: '1.6',
+              paddingLeft: '8px',
+              paddingRight: '8px',
               textShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
             }}
           >
@@ -128,44 +139,50 @@ export default function ShareCard({ result }: ShareCardProps) {
 
         {/* 구분선 */}
         <div
-          className="w-full h-px mb-4"
           style={{
+            width: '100%',
+            height: '1px',
+            marginBottom: '14px',
             background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
           }}
         />
 
         {/* TOP 1 프로그램 */}
-        <div className="mb-4">
-          <div className="flex items-center gap-1.5 mb-2">
-            <span className="text-lg">🎯</span>
-            <h3 className="text-sm font-bold text-white">추천 프로그램</h3>
+        <div style={{ marginBottom: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+            <span style={{ fontSize: '18px' }}>🎯</span>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: 'white' }}>추천 프로그램</h3>
           </div>
           <div
-            className="p-3 rounded-xl"
             style={{
+              padding: '12px',
+              borderRadius: '12px',
               background: 'rgba(255, 255, 255, 0.25)',
               border: '2px solid rgba(255, 255, 255, 0.4)',
             }}
           >
-            <div className="flex items-center gap-2 mb-1.5">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
               <span
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                 style={{
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  padding: '2px 8px',
+                  borderRadius: '9999px',
                   background: 'rgba(255, 255, 255, 0.3)',
                   color: 'white',
                 }}
               >
                 {topProgram.category}
               </span>
-              <span className="text-lg">🥇</span>
+              <span style={{ fontSize: '18px' }}>🥇</span>
             </div>
-            <h4 className="text-sm font-bold text-white mb-1 leading-tight">
+            <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: 'white', marginBottom: '4px', lineHeight: '1.3' }}>
               {topProgram.title}
             </h4>
-            <p className="text-[10px] text-white/80 mb-2 leading-relaxed">
+            <p style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.8)', marginBottom: '8px', lineHeight: '1.6' }}>
               {shortProgramDesc}
             </p>
-            <div className="flex items-center gap-2 text-[10px] text-white/90">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', color: 'rgba(255, 255, 255, 0.9)' }}>
               <span>📅 {topProgram.date}</span>
               <span>⏰ {topProgram.time}</span>
             </div>
@@ -173,19 +190,18 @@ export default function ShareCard({ result }: ShareCardProps) {
         </div>
 
         {/* 푸터 */}
-        <div className="mt-auto pt-4">
+        <div style={{ marginTop: 'auto', paddingTop: '12px', flexShrink: 0 }}>
           <div
-            className="w-full h-px mb-3"
             style={{
+              width: '100%',
+              height: '1px',
+              marginBottom: '10px',
               background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
             }}
           />
-          <div className="text-center">
-            <div className="text-[10px] font-bold text-white/90 mb-0.5">
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '10px', fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.9)' }}>
               21회 서울와우북페스티벌
-            </div>
-            <div className="text-[9px] text-white/70">
-              나만의 맑음을 찾아보세요 ✨
             </div>
           </div>
         </div>

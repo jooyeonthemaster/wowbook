@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { UserAnswer, RecommendationResult } from '@/types';
 import { questions } from '@/lib/questions';
-import { wowbookPrograms } from '@/lib/programs';
 import {
   calculateClarityType,
   calculateEmotionProfile,
