@@ -8,8 +8,72 @@ import GlassCard from '@/components/GlassCard';
 import Button from '@/components/Button';
 import ShareModal from '@/components/ShareModal';
 import { RecommendationResult, ClarityTypeCode, ClarityType } from '@/types';
-import { useAuth } from '@/contexts/AuthContext';
 import { getClarityType } from '@/lib/clarityTypes';
+
+// OG 메타 태그 생성 (서버 사이드)
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://20251002wowbook-h1vytimjc-jooyoens-projects-59877186.vercel.app';
+    
+    // API에서 결과 데이터 가져오기 (서버 사이드)
+    const response = await fetch(`${baseUrl}/api/results/${id}`, {
+      cache: 'no-store',
+    });
+    
+    if (!response.ok) {
+      return {
+        title: '맑음 진단 결과',
+        description: '21회 서울와우북페스티벌 맑음 진단',
+      };
+    }
+
+    const data = await response.json();
+    const result = data.result?.result;
+    
+    if (!result) {
+      return {
+        title: '맑음 진단 결과',
+        description: '21회 서울와우북페스티벌 맑음 진단',
+      };
+    }
+
+    const clarityType = result.clarityType;
+    const imageUrl = `${baseUrl}/image/weather-profile-${clarityType.code}${clarityType.code === 'IBSW' ? ' (1)' : ''}.png`;
+    
+    return {
+      title: `나의 맑음 유형: ${clarityType.name}`,
+      description: `"${clarityType.nickname}" - ${clarityType.description.slice(0, 100)}...`,
+      openGraph: {
+        title: `나의 맑음 유형: ${clarityType.name}`,
+        description: `"${clarityType.nickname}" - 21회 서울와우북페스티벌 맑음 진단 결과`,
+        images: [
+          {
+            url: imageUrl,
+            width: 380,
+            height: 580,
+            alt: clarityType.name,
+          },
+        ],
+        url: `${baseUrl}/result/${id}`,
+        siteName: '맑음 - 와우북페스티벌',
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `나의 맑음 유형: ${clarityType.name}`,
+        description: `"${clarityType.nickname}" - 21회 서울와우북페스티벌 맑음 진단 결과`,
+        images: [imageUrl],
+      },
+    };
+  } catch (error) {
+    console.error('메타데이터 생성 오류:', error);
+    return {
+      title: '맑음 진단 결과',
+      description: '21회 서울와우북페스티벌 맑음 진단',
+    };
+  }
+}
 
 // 궁합 좋은 유형 (2개)
 function getCompatibleTypes(code: ClarityTypeCode): ClarityType[] {

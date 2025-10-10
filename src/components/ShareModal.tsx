@@ -23,99 +23,44 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
   const shareDescription = `"${result.clarityType.nickname}" - 21회 서울와우북페스티벌 맑음 진단 결과`;
   const fullUrl = shareUrl || (typeof window !== 'undefined' ? window.location.href : '');
 
-  // 이미지 + 링크 공유 (Web Share API - 모바일 네이티브)
+  // 링크 공유 (Web Share API - OG 태그로 자동 프리뷰)
   const handleShare = async () => {
-    if (!cardRef.current) return;
-
     try {
       setIsSharing(true);
 
-      // 폰트와 이미지 로딩 대기 (레이아웃 안정화)
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Web Share API 지원 확인
+      if (navigator.share) {
+        const shareData: ShareData = {
+          title: shareTitle,
+          text: shareDescription,
+          url: fullUrl,
+        };
 
-      // transform: scale 제거하고 원본 크기로 캡처
-      const originalTransform = cardRef.current.style.transform;
-      const originalMargin = cardRef.current.style.marginBottom;
-      cardRef.current.style.transform = 'none';
-      cardRef.current.style.marginBottom = '0';
-
-      // 이미지를 생성
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2,
-        backgroundColor: null,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        width: 380,
-        height: 580,
-        windowWidth: 380,
-        windowHeight: 580,
-        imageTimeout: 0,
-        scrollY: -window.scrollY,
-        scrollX: -window.scrollX,
-      });
-
-      // 원래 스타일 복원
-      cardRef.current.style.transform = originalTransform;
-      cardRef.current.style.marginBottom = originalMargin;
-
-      // Canvas를 Blob으로 변환
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          setIsSharing(false);
-          return;
-        }
-
-        // Web Share API 지원 확인
-        if (navigator.share && navigator.canShare) {
-          try {
-            const file = new File([blob], `맑음진단_${result.clarityType.code}.png`, {
-              type: 'image/png',
-            });
-
-            // 공유할 메시지 (링크 포함)
-            const shareText = `${shareDescription}\n\n✨ 내 결과 자세히 보기:\n${fullUrl}\n\n🌤️ 나도 진단하러 가기:\n${window.location.origin}`;
-
-            // 이미지 + 텍스트(링크 포함) 공유
-            const shareData: ShareData = {
-              title: shareTitle,
-              text: shareText,
-            };
-
-            // 파일 공유 가능 여부 확인
-            if (navigator.canShare({ files: [file], ...shareData })) {
-              await navigator.share({
-                ...shareData,
-                files: [file],
-              });
-            } else if (navigator.canShare({ files: [file] })) {
-              // 파일만 공유 가능한 경우 (일부 브라우저)
-              await navigator.share({
-                files: [file],
-              });
-              console.log('텍스트는 포함되지 않았습니다. 이미지만 공유됩니다.');
-            } else {
-              // 파일 공유 미지원 시 텍스트만 공유
-              await navigator.share(shareData);
-              alert('이미지는 포함되지 않았습니다. 아래 "이미지 저장" 버튼으로 저장하세요!');
-            }
-          } catch (error) {
-            // 사용자가 취소한 경우 (AbortError)
-            if (error instanceof Error && error.name !== 'AbortError') {
-              console.error('공유 실패:', error);
-              alert('공유에 실패했습니다. 이미지 저장 버튼을 이용해주세요.');
-            }
+        try {
+          await navigator.share(shareData);
+          // 공유 성공 (사용자가 앱 선택하고 공유 완료)
+        } catch (error) {
+          // 사용자가 취소한 경우 (AbortError)
+          if (error instanceof Error && error.name !== 'AbortError') {
+            console.error('공유 실패:', error);
+            alert('공유에 실패했습니다.');
           }
-        } else {
-          // Web Share API 미지원 (데스크톱 등)
-          alert('이 브라우저는 공유 기능을 지원하지 않습니다.\n"이미지 저장" 버튼을 이용해주세요!');
         }
-
-        setIsSharing(false);
-      }, 'image/png');
+      } else {
+        // Web Share API 미지원 (데스크톱 등)
+        // 클립보드에 링크 복사
+        try {
+          await navigator.clipboard.writeText(fullUrl);
+          alert('✅ 링크가 클립보드에 복사되었습니다!\n카카오톡이나 메신저에 붙여넣기 하세요.');
+        } catch (clipboardError) {
+          // 클립보드도 실패하면 링크 선택
+          prompt('링크를 복사하세요:', fullUrl);
+        }
+      }
     } catch (error) {
-      console.error('이미지 생성 실패:', error);
-      alert('이미지 생성에 실패했습니다. 다시 시도해주세요.');
+      console.error('공유 오류:', error);
+      alert('공유 기능을 사용할 수 없습니다.');
+    } finally {
       setIsSharing(false);
     }
   };
