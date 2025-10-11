@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { domToPng } from 'modern-screenshot';
 import ShareCard from './ShareCard';
@@ -17,6 +17,36 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // iOS Safari: 모달 열릴 때 배경 스크롤 막기
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // 현재 스크롤 위치 저장
+    const scrollY = window.scrollY;
+    const body = document.body;
+    const html = document.documentElement;
+
+    // 배경 스크롤 막기 (iOS Safari 완벽 대응)
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.overflow = 'hidden';
+    html.style.overflow = 'hidden';
+
+    // cleanup: 모달 닫힐 때 원상복구
+    return () => {
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.overflow = '';
+      html.style.overflow = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, [isOpen]);
 
   // 캡처 전 폰트/이미지 로드 보장 및 안정화 대기
   const waitForCardAssets = async (root?: HTMLElement | null) => {
@@ -230,24 +260,38 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* 배경 오버레이 */}
+          {/* 배경 오버레이 - 클릭하면 닫힘 */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-            style={{ cursor: 'pointer' }}
+            style={{
+              cursor: 'pointer',
+              touchAction: 'none', // iOS 배경 터치 스크롤 완전 차단
+            }}
           />
 
-          {/* 모달 콘텐츠 */}
+          {/* 모달 콘텐츠 - 스크롤 가능 영역 */}
           <div
-            className="fixed inset-0 z-50 flex items-start justify-center pointer-events-none overflow-y-auto"
+            ref={modalRef}
+            className="fixed inset-0 z-[51] flex items-start justify-center overflow-y-scroll"
             style={{
-              padding: '16px',
-              paddingTop: 'calc(72px + env(safe-area-inset-top))', // 상단 헤더 56px + 여유 16px
-              paddingBottom: 'max(120px, calc(72px + env(safe-area-inset-bottom)))', // iOS Safari 대응: 최소 120px
-              WebkitOverflowScrolling: 'touch',
+              padding: '0',
+              paddingTop: 'max(72px, calc(56px + 16px + env(safe-area-inset-top)))',
+              paddingBottom: 'max(120px, calc(72px + env(safe-area-inset-bottom)))',
+              paddingLeft: '16px',
+              paddingRight: '16px',
+              WebkitOverflowScrolling: 'touch', // iOS 부드러운 스크롤
+              overscrollBehavior: 'contain', // 스크롤 끝에서 바운스 방지
+              touchAction: 'pan-y', // 세로 스크롤만 허용
+            }}
+            onClick={(e) => {
+              // 배경 클릭 시 모달 닫기 (버튼 클릭은 제외)
+              if (e.target === e.currentTarget) {
+                onClose();
+              }
             }}
           >
             <motion.div
@@ -255,13 +299,16 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', duration: 0.5 }}
-              className="pointer-events-auto w-full max-w-[340px] my-auto"
+              className="w-full max-w-[340px] my-auto"
+              style={{
+                minHeight: 'min-content', // 내용 크기만큼만
+              }}
             >
               {/* 스크롤 컨테이너 */}
               <div
                 className="flex flex-col items-center gap-4"
                 style={{
-                  paddingBottom: '4px',
+                  paddingBottom: '0',
                 }}
               >
                 {/* 공유 카드 (84.2% 축소: 380→320, 676→569) */}
