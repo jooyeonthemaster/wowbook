@@ -151,12 +151,19 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
       await waitForCardAssets(cardElement);
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      const targetWidth = 380;
-      const targetHeight = 676;
+      // 캡처 전: ShareCard의 로고 숨기기
+      const logoElement = cardElement.querySelector('.share-card-logo') as HTMLElement;
+      const originalDisplay = logoElement ? logoElement.style.display : '';
+      if (logoElement) {
+        logoElement.style.display = 'none';
+      }
+
+      const targetWidth = 400;
+      const targetHeight = 500;
 
       console.log('Capturing ShareCard directly...');
 
-      // modern-screenshot으로 이미지 생성 (9:16 비율 380x676)
+      // modern-screenshot으로 이미지 생성 (4:5 비율 400x500)
       const dataUrl = await domToPng(cardElement, {
         width: targetWidth,
         height: targetHeight,
@@ -164,11 +171,65 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
         backgroundColor: '#3b82f6',
       });
 
+      // 캡처 후: 로고 원상복구
+      if (logoElement) {
+        logoElement.style.display = originalDisplay;
+      }
+
       console.log('Image created successfully');
 
-      // Data URL을 Blob으로 변환
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
+      // Canvas에 로고 오버레이 추가 (고해상도)
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth * 2;
+      canvas.height = targetHeight * 2;
+      const ctx = canvas.getContext('2d');
+
+      if (ctx) {
+        // 1. 캡처된 이미지 그리기
+        const cardImage = new Image();
+        cardImage.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve, reject) => {
+          cardImage.onload = () => resolve();
+          cardImage.onerror = reject;
+          cardImage.src = dataUrl;
+        });
+        ctx.drawImage(cardImage, 0, 0, canvas.width, canvas.height);
+
+        // 2. 로고 이미지 로드 및 그리기 (좌측 상단)
+        const logo = new Image();
+        logo.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve, reject) => {
+          logo.onload = () => resolve();
+          logo.onerror = reject;
+          logo.src = '/logo/logo.png';
+        });
+
+        // 로고 크기: 240px (더 크게 렌더링)
+        const logoWidth = 240;
+        const logoHeight = (logo.height / logo.width) * logoWidth;
+        const logoX = 36; // padding
+        const logoY = 36;
+
+        // 고품질 렌더링 설정
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        // 그림자 효과 제거 (깨끗한 로고)
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+      }
+
+      // Canvas를 Blob으로 변환
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((b) => {
+          if (b) resolve(b);
+          else reject(new Error('Canvas to Blob 변환 실패'));
+        }, 'image/png', 1.0);
+      });
 
       // Web Share API로 이미지 파일 공유
       if (navigator.share && navigator.canShare) {
@@ -219,12 +280,19 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
       await waitForCardAssets(cardElement);
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      const targetWidth = 380;
-      const targetHeight = 676;
+      // 캡처 전: ShareCard의 로고 숨기기
+      const logoElement = cardElement.querySelector('.share-card-logo') as HTMLElement;
+      const originalDisplay = logoElement ? logoElement.style.display : '';
+      if (logoElement) {
+        logoElement.style.display = 'none';
+      }
+
+      const targetWidth = 400;
+      const targetHeight = 500;
 
       console.log('Download - Capturing ShareCard directly...');
 
-      // modern-screenshot으로 이미지 생성 (9:16 비율 380x676)
+      // modern-screenshot으로 이미지 생성 (4:5 비율 400x500)
       const dataUrl = await domToPng(cardElement, {
         width: targetWidth,
         height: targetHeight,
@@ -232,11 +300,65 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
         backgroundColor: '#3b82f6',
       });
 
+      // 캡처 후: 로고 원상복구
+      if (logoElement) {
+        logoElement.style.display = originalDisplay;
+      }
+
       console.log('Download - Image created successfully');
 
-      // Data URL을 Blob으로 변환
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
+      // Canvas에 로고 오버레이 추가 (고해상도)
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth * 2;
+      canvas.height = targetHeight * 2;
+      const ctx = canvas.getContext('2d');
+
+      if (ctx) {
+        // 1. 캡처된 이미지 그리기
+        const cardImage = new Image();
+        cardImage.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve, reject) => {
+          cardImage.onload = () => resolve();
+          cardImage.onerror = reject;
+          cardImage.src = dataUrl;
+        });
+        ctx.drawImage(cardImage, 0, 0, canvas.width, canvas.height);
+
+        // 2. 로고 이미지 로드 및 그리기 (좌측 상단)
+        const logo = new Image();
+        logo.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve, reject) => {
+          logo.onload = () => resolve();
+          logo.onerror = reject;
+          logo.src = '/logo/logo.png';
+        });
+
+        // 로고 크기: 240px (더 크게 렌더링)
+        const logoWidth = 240;
+        const logoHeight = (logo.height / logo.width) * logoWidth;
+        const logoX = 36; // padding
+        const logoY = 36;
+
+        // 고품질 렌더링 설정
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
+        // 그림자 효과 제거 (깨끗한 로고)
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
+      }
+
+      // Canvas를 Blob으로 변환
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((b) => {
+          if (b) resolve(b);
+          else reject(new Error('Canvas to Blob 변환 실패'));
+        }, 'image/png', 1.0);
+      });
 
       // Blob을 다운로드
       const url = URL.createObjectURL(blob);
@@ -311,15 +433,15 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
                   paddingBottom: '0',
                 }}
               >
-                {/* 공유 카드 (84.2% 축소: 380→320, 676→569) */}
+                {/* 공유 카드 (80% 축소: 400→320, 500→400) */}
                 <div
                   ref={cardRef}
                   style={{
-                    transform: 'scale(0.842)',
+                    transform: 'scale(0.8)',
                     transformOrigin: 'top center',
-                    marginBottom: '-107px', // 676px 높이 기준 축소 빈공간 보정 (~676*(1-0.842))
-                    width: '380px',
-                    height: '676px',
+                    marginBottom: '-100px', // 500px 높이 기준 축소 빈공간 보정 (500*(1-0.8))
+                    width: '400px',
+                    height: '500px',
                   }}
                 >
                   <ShareCard result={result} />
