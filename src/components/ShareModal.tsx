@@ -271,7 +271,7 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
                   
                   {/* 하단 버튼 그룹 */}
                   <div className="flex gap-2.5">
-                    {/* 이미지 공유 (인스타그램) */}
+                    {/* 인스타그램 공유 */}
                     <button
                       onClick={handleImageShare}
                       disabled={isSharing}
@@ -284,7 +284,7 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
                         boxShadow: '0 4px 20px rgba(236, 72, 153, 0.4)',
                       }}
                     >
-                      {isSharing ? '준비 중...' : '📸 이미지 공유'}
+                      {isSharing ? '준비 중...' : '📸 인스타그램'}
                     </button>
                     
                     {/* 이미지 저장 */}
