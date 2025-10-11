@@ -72,7 +72,6 @@ export default function ShareCard({ result }: ShareCardProps) {
                 borderRadius: '50%',
                 padding: '10px',
                 border: '2px solid rgba(255, 255, 255, 0.4)',
-                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)',
               }}
             >
               <img
@@ -83,7 +82,6 @@ export default function ShareCard({ result }: ShareCardProps) {
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
-                  filter: 'drop-shadow(0 4px 12px rgba(255, 255, 255, 0.3))',
                   borderRadius: '50%',
                 }}
               />

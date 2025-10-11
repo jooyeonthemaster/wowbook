@@ -383,11 +383,6 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
                       {isDownloading ? '저장 중...' : '📥 저장'}
                     </button>
                   </div>
-                  
-                  {/* 안내 문구 */}
-                  <div className="text-center text-xs text-white/60 px-2 leading-relaxed">
-                    💡 카카오톡: 링크 공유 / 인스타그램: 이미지 공유
-                  </div>
                 </div>
               </div>
             </motion.div>
