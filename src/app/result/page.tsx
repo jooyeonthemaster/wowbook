@@ -10,6 +10,7 @@ import ShareModal from '@/components/ShareModal';
 import { RecommendationResult, ClarityTypeCode, ClarityType } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 import { getClarityType } from '@/lib/clarityTypes';
+import getProfileImageSrc from '@/lib/getProfileImageSrc';
 
 // 궁합 좋은 유형 (2개)
 function getCompatibleTypes(code: ClarityTypeCode): ClarityType[] {
@@ -191,7 +192,7 @@ export default function ResultPage() {
                 className="mb-6 floating flex justify-center"
               >
                 <img
-                  src={`/image/weather-profile-${result.clarityType.code}${result.clarityType.code === 'IBSW' ? ' (1)' : ''}.png`}
+                  src={getProfileImageSrc(result.clarityType.code)}
                   alt={result.clarityType.name}
                   className="w-48 h-48 object-contain"
                   style={{

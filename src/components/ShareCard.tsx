@@ -1,6 +1,7 @@
 'use client';
 
 import { RecommendationResult } from '@/types';
+import getProfileImageSrc from '@/lib/getProfileImageSrc';
 
 interface ShareCardProps {
   result: RecommendationResult;
@@ -19,10 +20,7 @@ function summarizeDescription(desc: string): string {
 
 // 프로그램 설명을 짧게 요약하는 함수
 function summarizeProgram(desc: string): string {
-  // 50자 이내로 제한
-  if (desc.length > 50) {
-    return desc.substring(0, 47) + '...';
-  }
+  // 말줄임 없이 전체 문장 표시
   return desc;
 }
 
@@ -36,7 +34,7 @@ export default function ShareCard({ result }: ShareCardProps) {
       style={{
         position: 'relative',
         width: '380px',
-        height: '580px',
+        height: '676px',
         background: 'linear-gradient(135deg, #93c5fd 0%, #60a5fa 25%, #3b82f6 50%, #2563eb 75%, #1d4ed8 100%)',
         borderRadius: '24px',
         padding: '20px 18px',
@@ -51,10 +49,10 @@ export default function ShareCard({ result }: ShareCardProps) {
       </div>
 
       {/* 콘텐츠 */}
-      <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', height: '100%', gap: '12px' }}>
         {/* 헤더 */}
-        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-          <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '2px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'rgba(255, 255, 255, 0.9)', marginBottom: '4px' }}>
             🌈 나의 맑음 진단 결과
           </div>
           <div style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.7)' }}>
@@ -63,7 +61,7 @@ export default function ShareCard({ result }: ShareCardProps) {
         </div>
 
         {/* 유형 이미지 + 정보 */}
-        <div style={{ textAlign: 'center', marginBottom: '14px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '10px' }}>
             <div
               style={{
@@ -78,8 +76,9 @@ export default function ShareCard({ result }: ShareCardProps) {
               }}
             >
               <img
-                src={`/image/weather-profile-${result.clarityType.code}${result.clarityType.code === 'IBSW' ? ' (1)' : ''}.png`}
+                src={getProfileImageSrc(result.clarityType.code)}
                 alt={result.clarityType.name}
+                crossOrigin="anonymous"
                 style={{
                   width: '100%',
                   height: '100%',
@@ -159,6 +158,8 @@ export default function ShareCard({ result }: ShareCardProps) {
               borderRadius: '12px',
               background: 'rgba(255, 255, 255, 0.25)',
               border: '2px solid rgba(255, 255, 255, 0.4)',
+              marginLeft: '1px',
+              marginRight: '1px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>

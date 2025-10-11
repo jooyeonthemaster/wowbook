@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import html2canvas from 'html2canvas';
+import { domToPng } from 'modern-screenshot';
 import ShareCard from './ShareCard';
 import { RecommendationResult } from '@/types';
 
@@ -17,6 +17,49 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // 캡처 전 폰트/이미지 로드 보장 및 안정화 대기
+  const waitForCardAssets = async (root?: HTMLElement | null) => {
+    try {
+      // 폰트 로드 대기
+      if (typeof document !== 'undefined') {
+        const doc = document as Document & { fonts?: { ready: Promise<void> } };
+        if (doc.fonts?.ready) {
+          await doc.fonts.ready.catch(() => undefined);
+        }
+      }
+
+      // 이미지 로드 대기 (지정된 루트 기준)
+      const scope = root ?? cardRef.current ?? undefined;
+      const images = Array.from(scope?.querySelectorAll('img') || []);
+      await Promise.all(
+        images.map((img) =>
+          new Promise<void>((resolve) => {
+            if (img.complete && img.naturalWidth > 0) return resolve();
+
+            const handleLoad = () => {
+              // 이미지 로드 후 crossOrigin 강제 설정
+              if (!img.crossOrigin) {
+                img.crossOrigin = 'anonymous';
+              }
+              resolve();
+            };
+
+            img.addEventListener('load', handleLoad, { once: true });
+            img.addEventListener('error', () => resolve(), { once: true });
+
+            // 이미 로드된 경우를 위한 fallback
+            if (img.complete) {
+              handleLoad();
+            }
+          })
+        )
+      );
+
+      // 레이아웃 안정화 대기
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    } catch {}
+  };
 
   // 공유할 텍스트
   const shareTitle = `나의 맑음 유형: ${result.clarityType.name}`;
@@ -50,7 +93,7 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
         try {
           await navigator.clipboard.writeText(fullUrl);
           alert('✅ 링크가 클립보드에 복사되었습니다!\n카카오톡이나 메신저에 붙여넣기 하세요.');
-        } catch (clipboardError) {
+        } catch {
           prompt('링크를 복사하세요:', fullUrl);
         }
       }
@@ -69,70 +112,61 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
     try {
       setIsSharing(true);
 
-      // 폰트와 이미지 로딩 대기
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // cardRef의 첫 번째 자식 (실제 ShareCard)을 직접 캡처
+      const cardElement = cardRef.current.querySelector('div') as HTMLElement;
+      if (!cardElement) {
+        throw new Error('ShareCard 요소를 찾을 수 없습니다');
+      }
 
-      // transform: scale 제거하고 원본 크기로 캡처
-      const originalTransform = cardRef.current.style.transform;
-      const originalMargin = cardRef.current.style.marginBottom;
-      cardRef.current.style.transform = 'none';
-      cardRef.current.style.marginBottom = '0';
+      await waitForCardAssets(cardElement);
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      // 이미지 생성
-      const canvas = await html2canvas(cardRef.current, {
+      const targetWidth = 380;
+      const targetHeight = 676;
+
+      console.log('Capturing ShareCard directly...');
+
+      // modern-screenshot으로 이미지 생성 (9:16 비율 380x676)
+      const dataUrl = await domToPng(cardElement, {
+        width: targetWidth,
+        height: targetHeight,
         scale: 2,
-        backgroundColor: null,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        width: 380,
-        height: 580,
-        windowWidth: 380,
-        windowHeight: 580,
-        imageTimeout: 0,
-        scrollY: -window.scrollY,
-        scrollX: -window.scrollX,
+        backgroundColor: '#3b82f6',
       });
 
-      // 원래 스타일 복원
-      cardRef.current.style.transform = originalTransform;
-      cardRef.current.style.marginBottom = originalMargin;
+      console.log('Image created successfully');
 
-      // Canvas를 Blob으로 변환
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          setIsSharing(false);
-          return;
-        }
+      // Data URL을 Blob으로 변환
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
 
-        // Web Share API로 이미지 파일 공유
-        if (navigator.share && navigator.canShare) {
-          try {
-            const file = new File([blob], `맑음진단_${result.clarityType.code}.png`, {
-              type: 'image/png',
+      // Web Share API로 이미지 파일 공유
+      if (navigator.share && navigator.canShare) {
+        try {
+          const file = new File([blob], `맑음진단_${result.clarityType.code}.png`, {
+            type: 'image/png',
+          });
+
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: shareTitle,
+              text: shareDescription,
             });
-
-            if (navigator.canShare({ files: [file] })) {
-              await navigator.share({
-                files: [file],
-                title: shareTitle,
-                text: shareDescription,
-              });
-            } else {
-              alert('이 브라우저는 이미지 공유를 지원하지 않습니다.\n"📥 저장" 버튼을 이용해주세요!');
-            }
-          } catch (error) {
-            if (error instanceof Error && error.name !== 'AbortError') {
-              console.error('이미지 공유 실패:', error);
-              alert('이미지 공유에 실패했습니다.');
-            }
+          } else {
+            alert('이 브라우저는 이미지 공유를 지원하지 않습니다.\n"📥 저장" 버튼을 이용해주세요!');
           }
-        } else {
-          alert('이 브라우저는 공유 기능을 지원하지 않습니다.');
+        } catch (error) {
+          if (error instanceof Error && error.name !== 'AbortError') {
+            console.error('이미지 공유 실패:', error);
+            alert('이미지 공유에 실패했습니다.');
+          }
         }
+      } else {
+        alert('이 브라우저는 공유 기능을 지원하지 않습니다.');
+      }
 
-        setIsSharing(false);
-      }, 'image/png');
+      setIsSharing(false);
     } catch (error) {
       console.error('이미지 생성 실패:', error);
       alert('이미지 생성에 실패했습니다.');
@@ -146,51 +180,45 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
     try {
       setIsDownloading(true);
 
-      // 폰트와 이미지 로딩 대기 (레이아웃 안정화)
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // cardRef의 첫 번째 자식 (실제 ShareCard)을 직접 캡처
+      const cardElement = cardRef.current.querySelector('div') as HTMLElement;
+      if (!cardElement) {
+        throw new Error('ShareCard 요소를 찾을 수 없습니다');
+      }
 
-      // transform: scale 제거하고 원본 크기로 캡처
-      const originalTransform = cardRef.current.style.transform;
-      const originalMargin = cardRef.current.style.marginBottom;
-      cardRef.current.style.transform = 'none';
-      cardRef.current.style.marginBottom = '0';
+      await waitForCardAssets(cardElement);
+      await new Promise(resolve => setTimeout(resolve, 100));
 
-      // html2canvas로 DOM을 이미지로 변환
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2, // 고해상도
-        backgroundColor: null,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        width: 380,
-        height: 580,
-        windowWidth: 380,
-        windowHeight: 580,
-        imageTimeout: 0,
-        scrollY: -window.scrollY,
-        scrollX: -window.scrollX,
+      const targetWidth = 380;
+      const targetHeight = 676;
+
+      console.log('Download - Capturing ShareCard directly...');
+
+      // modern-screenshot으로 이미지 생성 (9:16 비율 380x676)
+      const dataUrl = await domToPng(cardElement, {
+        width: targetWidth,
+        height: targetHeight,
+        scale: 2,
+        backgroundColor: '#3b82f6',
       });
 
-      // 원래 스타일 복원
-      cardRef.current.style.transform = originalTransform;
-      cardRef.current.style.marginBottom = originalMargin;
+      console.log('Download - Image created successfully');
 
-      // Canvas를 Blob으로 변환
-      canvas.toBlob((blob) => {
-        if (!blob) return;
+      // Data URL을 Blob으로 변환
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
 
-        // Blob을 다운로드
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `맑음진단_${result.clarityType.code}_${new Date().getTime()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+      // Blob을 다운로드
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `맑음진단_${result.clarityType.code}_${new Date().getTime()}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
-        setIsDownloading(false);
-      }, 'image/png');
+      setIsDownloading(false);
     } catch (error) {
       console.error('이미지 다운로드 실패:', error);
       alert('이미지 다운로드에 실패했습니다. 다시 시도해주세요.');
@@ -214,10 +242,12 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
 
           {/* 모달 콘텐츠 */}
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            className="fixed inset-0 z-50 flex items-start justify-center pointer-events-none overflow-y-auto"
             style={{
               padding: '16px',
-              paddingBottom: 'calc(16px + env(safe-area-inset-bottom))'
+              paddingTop: 'calc(72px + env(safe-area-inset-top))', // 상단 헤더 56px + 여유 16px
+              paddingBottom: 'calc(72px + env(safe-area-inset-bottom))', // 하단 네비게이션 56px + 여유 16px
+              WebkitOverflowScrolling: 'touch',
             }}
           >
             <motion.div
@@ -225,27 +255,24 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', duration: 0.5 }}
-              className="pointer-events-auto w-full max-w-[340px]"
-              style={{
-                maxHeight: 'calc(100vh - 32px - env(safe-area-inset-bottom))'
-              }}
+              className="pointer-events-auto w-full max-w-[340px] my-auto"
             >
               {/* 스크롤 컨테이너 */}
               <div
-                className="flex flex-col items-center gap-4 h-full overflow-y-auto overflow-x-hidden"
+                className="flex flex-col items-center gap-4"
                 style={{
                   paddingBottom: '4px',
-                  // iOS 스크롤 부드럽게
-                  WebkitOverflowScrolling: 'touch',
                 }}
               >
-                {/* 공유 카드 (84.2% 축소: 380→320, 580→488) */}
+                {/* 공유 카드 (84.2% 축소: 380→320, 676→569) */}
                 <div
                   ref={cardRef}
                   style={{
                     transform: 'scale(0.842)',
                     transformOrigin: 'top center',
-                    marginBottom: '-92px', // 축소로 생긴 빈 공간 제거
+                    marginBottom: '-107px', // 676px 높이 기준 축소 빈공간 보정 (~676*(1-0.842))
+                    width: '380px',
+                    height: '676px',
                   }}
                 >
                   <ShareCard result={result} />

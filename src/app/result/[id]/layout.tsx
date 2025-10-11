@@ -33,7 +33,10 @@ export async function generateMetadata({
     }
 
     const clarityType = result.clarityType;
-    const imageUrl = `${baseUrl}/image/weather-profile-${clarityType.code}${clarityType.code === 'IBSW' ? ' (1)' : ''}.png`;
+    const isJpg = clarityType.code === 'IGSC';
+    const suffix = clarityType.code === 'IBSW' ? ' (1)' : '';
+    const ext = isJpg ? 'jpg' : 'png';
+    const imageUrl = `${baseUrl}/image/weather-profile-${clarityType.code}${suffix}.${ext}`;
     
     return {
       title: `나의 맑음 유형: ${clarityType.name}`,
