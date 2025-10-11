@@ -148,9 +148,9 @@ export default function ShareCard({ result }: ShareCardProps) {
 
         {/* TOP 1 프로그램 */}
         <div style={{ marginBottom: '14px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '18px' }}>🎯</span>
-            <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: 'white' }}>추천 프로그램</h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', width: '100%' }}>
+            <span style={{ fontSize: '18px', flexShrink: 0 }}>🎯</span>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', color: 'white', whiteSpace: 'nowrap' }}>추천 프로그램</h3>
           </div>
           <div
             style={{
@@ -162,7 +162,7 @@ export default function ShareCard({ result }: ShareCardProps) {
               marginRight: '1px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'nowrap', width: '100%' }}>
               <span
                 style={{
                   fontSize: '10px',
@@ -171,21 +171,23 @@ export default function ShareCard({ result }: ShareCardProps) {
                   borderRadius: '9999px',
                   background: 'rgba(255, 255, 255, 0.3)',
                   color: 'white',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
                 }}
               >
                 {topProgram.category}
               </span>
-              <span style={{ fontSize: '18px' }}>🥇</span>
+              <span style={{ fontSize: '18px', flexShrink: 0 }}>🥇</span>
             </div>
-            <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: 'white', marginBottom: '4px', lineHeight: '1.3' }}>
+            <h4 style={{ fontSize: '14px', fontWeight: 'bold', color: 'white', marginBottom: '4px', lineHeight: '1.3', wordBreak: 'keep-all' }}>
               {topProgram.title}
             </h4>
-            <p style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.8)', marginBottom: '8px', lineHeight: '1.6' }}>
+            <p style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.8)', marginBottom: '8px', lineHeight: '1.6', wordBreak: 'keep-all' }}>
               {shortProgramDesc}
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', color: 'rgba(255, 255, 255, 0.9)' }}>
-              <span>📅 {topProgram.date}</span>
-              <span>⏰ {topProgram.time}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '10px', color: 'rgba(255, 255, 255, 0.9)', flexWrap: 'nowrap', width: '100%' }}>
+              <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>📅 {topProgram.date}</span>
+              <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>⏰ {topProgram.time}</span>
             </div>
           </div>
         </div>
