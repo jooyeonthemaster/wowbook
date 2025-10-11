@@ -246,7 +246,7 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
             style={{
               padding: '16px',
               paddingTop: 'calc(72px + env(safe-area-inset-top))', // 상단 헤더 56px + 여유 16px
-              paddingBottom: 'calc(72px + env(safe-area-inset-bottom))', // 하단 네비게이션 56px + 여유 16px
+              paddingBottom: 'max(120px, calc(72px + env(safe-area-inset-bottom)))', // iOS Safari 대응: 최소 120px
               WebkitOverflowScrolling: 'touch',
             }}
           >
@@ -279,7 +279,13 @@ export default function ShareModal({ isOpen, onClose, result, shareUrl }: ShareM
                 </div>
 
                 {/* 버튼들 */}
-                <div className="flex flex-col gap-2.5 w-full" style={{ flexShrink: 0 }}>
+                <div
+                  className="flex flex-col gap-2.5 w-full"
+                  style={{
+                    flexShrink: 0,
+                    paddingBottom: 'max(20px, env(safe-area-inset-bottom))' // iOS Safari 추가 여백
+                  }}
+                >
                   {/* 링크 공유 (카카오톡, 메신저) */}
                   <button
                     onClick={handleLinkShare}
